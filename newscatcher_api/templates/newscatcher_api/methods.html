@@ -1,0 +1,75 @@
+{% extends "newscatcher_api/base.html" %}
+{% block heading %}
+<h1>Methods Used</h1>
+<h2>Build Query -> Check Response -> Calculate Results -> Display Output</h2>
+{% endblock heading %}
+{% block methods %}
+{% load static %}
+<main class="container rounded-3 border border-2 border-dark" id="methods">
+    <section class="methods-box">
+        <div class="first">
+            <h4>Queryset Build</h4><hr>
+            <ul>
+                <li>query['q'] = topic</li>
+                <li>query['from'] = request.POST['from']</li>
+                <li>query['to'] = request.POST['to']</li>
+                <li>query['media'] = false</li>
+                <li>query['agg_by'] = day</li>
+                <li>query['country'] = request.POST['country_id']</li>
+                <li>query['lang'] = matching dictionary data</li>
+            </ul>
+        </div>
+        <div class="second">
+            <h4>Check Status Response</h4><hr>
+            <ul>
+                <li>If status = 'ok' results are totalled and saved to database</li>
+                <li>Anything other is defaulted to equal 0</li>
+                <li>Response status is stored for output</li>
+            </ul>
+        </div>
+        <div class="third">
+            <h4>Calculate and Display</h4><hr>
+            <ul>
+                <li>Try calculating percentage</li>
+                <li>Store results in Session</li>
+                <li>If results pass tests display outputs</a></li>
+            </ul>
+        </div>
+    </section>
+    <div id="codeImgCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for each in img_gallery %}
+            <button type="button" data-bs-target="#codeImgCarousel" data-bs-slide-to="{{ each.id }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ each.id }}"></button>
+            {% endfor %}
+        </div>
+        <div class="carousel-inner">
+        {% for each in img_gallery %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{% get_static_prefix %}img/{{ each.img }}.png" class="d-block w-100" alt="{{ each.desc }}">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>{{ each.title }}</h5>
+                    <p>{{ each.desc }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#codeImgCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#codeImgCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</main>
+<script>
+$(document).ready(function() {
+    var myCarousel = document.querySelector('#codeImgCarousel')
+    var carousel = new bootstrap.Carousel(myCarousel, {
+    interval: 4000,
+})
+});
+
+</script>
+{% endblock methods %}

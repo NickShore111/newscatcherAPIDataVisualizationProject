@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Voice</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/cupertino/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+
+<body id="bg-img">
+<div class="container-fluid" >
+        <nav class="navbar navbar-expand-lg navbar-light d-flex p-2 " style="background-color: #e3f2fd;">
+            <!-- Navbar content -->
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Nicholas Shore</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Methods</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">References</a>
+                </li>
+                </ul>
+                <span class="navbar-text">
+                API Data Request and Visual Representation 
+                </span>
+            </div>
+            </div>
+        </nav>
+    <header>
+        <h1>Welcome to World Voice!</h1>
+        <h2>See what the world is talking about.</h2>
+    </header>
+    <div class="hero">
+        <div class="input-panel rounded-3 border border-2 border-dark" id="input-panel">
+            <form action="display/" method="POST">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.extra_tags == "date" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+                    {% endfor %}
+                {% endif %}                
+                {% csrf_token %}
+                <h5 aria-label="date">Select Date</h5><input type="text" id="datepicker" name="date">
+                <h5>Choose a Country</h5>
+                <select class="form-select form-select-sm border-dark" aria-label="inputRegion" name="country" id="country">
+                    {% for country in list_options.countries %}
+                        <option value="{{ country.id }}" selected>{{ country.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.extra_tags == "topics" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+                    {% endfor %}
+                {% endif %}
+                    <h6>Select Topics</h6> 
+                {% for issue in list_options.topics_list %}
+                <div class="form-check">
+                    <input class="form-check-input topics" type="checkbox" name="topic" value="{{ issue }}" id="{{ issue }}">
+                    <label class="form-check-label" for="{{ issue }}">{{ issue }}</label>
+                </div>
+                {% endfor %}
+                    <input class="form-check-input" type="checkbox" name="all_topics" id="all_topics">&nbsp;
+                    <label class="form-check-label" for="all_topics">Select All</label>
+                <h6>Keyword: (optional)</h6>
+                <input type="text" class="form-control-sm" name="keyword"><br>
+                <button type="submit" class="btn btn-primary m-2 border border-dark">Display</button>
+            </form>
+        </div>
+        <div class="rounded-3 border border-2 border-dark" id="output_display"></div>
+    </div>
+</div>
+<script>
+
+    $( "#datepicker" ).datepicker({showAnim: "clip", dateFormat: "yy-mm-dd"});
+    $("#all_topics").on("click", function() {
+        $(".topics")
+            .prop("checked", this.checked)
+            .toggleClass("selected", this.checked)});
+    $("#country")[0].selectedIndex = 0;
+</script>
+
+<script language = "JavaScript">
+        $(document).ready(function() {
+        var chart = {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        };
+        var title = {
+            {% if valid_results %}
+            {% for data in valid_results %}
+            text: 'Number of News articles by topic for {{ data.country}}, {{data.date}}
+            {% endfor %}
+            {% else %}
+            text: 'Number of News articles by topic for Place, Date'   
+            {% endif %}
+        };
+        var tooltip = {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        };
+        var plotOptions = {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}%</b>: {point.percentage:.1f} %',
+                    style: {
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor)||
+                    'black'
+                    }
+                }
+            }
+        };
+        var series = [{
+            type: 'pie',
+            name: 'Article share',
+            data: [
+                {% if pie_chart_results %}
+                {% for key, value in pie_chart_results %}
+                ['{{key}}',   {{value}}],
+                {% endfor %}
+                {% else %}
+                ['Topic1',   13],
+                ['Topic2',       24],
+                ['Keyword',    11],
+                {% endif %}
+            
+            ]
+        }];
+        var json = {};   
+        json.chart = chart; 
+        json.title = title;     
+        json.tooltip = tooltip;  
+        json.series = series;
+        json.plotOptions = plotOptions;
+        $('#output_display').highcharts(json);  
+        });
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
+</html>

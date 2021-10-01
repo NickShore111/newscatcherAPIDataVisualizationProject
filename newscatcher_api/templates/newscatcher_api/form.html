@@ -1,0 +1,165 @@
+{% extends "newscatcher_api/base.html" %}
+{% block heading %}
+<h1>Welcome to World Voice!</h1>
+<h2>See what the world is talking about.</h2>
+{% endblock heading %}
+{% block form %}
+<div class="input-form rounded-3 border border-2 border-dark">
+    <form action="results/" method="POST">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.extra_tags == "date" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+            {% endfor %}
+        {% endif %}
+        <h6 aria-label="date">Select Dates: (Range 0-5 days)</h6>
+        {% csrf_token %}
+        <label for="from">From</label>
+        <input type="text" id="from" name="from" style="margin-bottom: 10px;"><br>
+        <label for="to" style="margin-right: 18px;">To</label>
+        <input type="text" id="to" name="to">
+        <h6>Choose a Country</h6>
+        <select class="form-select form-select-sm border-dark" aria-label="inputRegion" name="country_id" id="country">
+            {% for country in list_options.countries %}
+                <option value="{{ country.id }}" selected>{{ country.name }}</option>
+            {% endfor %}
+        </select>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.extra_tags == "topics" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+            {% endfor %}
+        {% endif %}
+            <h6>Select Topics</h6> 
+        {% for issue in list_options.topics_list %}
+        <div class="form-check">
+            <input class="form-check-input topics" type="checkbox" name="topic" value="{{ issue }}" id="{{ issue }}">
+            <label class="form-check-label" for="{{ issue }}">{{ issue }}</label>
+        </div>
+        {% endfor %}
+            <input class="form-check-input" type="checkbox" name="all_topics" id="all_topics">&nbsp;
+            <label class="form-check-label" for="all_topics">Select All</label><br>
+        <h6>Keyword: (optional)</h6>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.extra_tags == "keyword" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+            {% endfor %}
+        {% endif %}
+        <input type="text" class="form-control-sm" name="keyword">
+        <button type="submit" class="btn btn-primary m-2 border-dark" style="float:right;">Display</button>
+    </form>
+</div>
+{% if request.session.status_errors %}
+<div class="query_results rounded-3 border border-2 border-dark">
+    <h5>Response status return:</h5><hr>
+    <dl>{% for key, value in request.session.status_errors.items %}
+        <dt>{{ key }}:</dt>
+        <dd>{{ value|capfirst }}</dd>
+        {% endfor %}
+    </dl>
+</div>
+{% endif %}
+{% if request.session.doc_counts %}
+<div class="query_results rounded-3 border border-2 border-dark">
+    <h5>Article Totals:</h5><hr>
+    <dl>{% for key, value in request.session.doc_counts.items %}
+        <dt>{{ key }}:</dt>
+        <dd>{{ value }} total articles</dd>
+        {% endfor %}
+    </dl>
+</div>
+{% endif %}
+<div class="rounded-3 border border-2 border-dark" id="output_display"></div>
+
+<script>
+$(document).ready(function() {
+    var dateFormat = "yy-mm-dd",
+        from = $( "#from" ).datepicker({
+            defaultDate: "-5d",
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 1,
+            maxDate: "0D",
+            showAnim: "clip",
+            dateFormat: "yy-mm-dd"
+            })
+            .on( "change", function() {
+            to.datepicker( "option", "minDate", getDate( this ) );
+            }),
+        to = $( "#to" ).datepicker({
+            defaultDate: "-1d",
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 1,
+            maxDate: "0D",
+            showAnim: "clip",
+            dateFormat: "yy-mm-dd"
+        })
+        .on( "change", function() {
+            from.datepicker( "option", "maxDate", getDate( this ) );
+        });
+        function getDate( element ) {
+        var date;
+        try {
+            date = $.datepicker.parseDate( dateFormat, element.value );
+        } catch( error ) {
+            date = null;
+        }
+        return date;
+        }
+
+    $("#all_topics").on("click", function() {
+        $(".topics")
+            .prop("checked", this.checked)
+            .toggleClass("selected", this.checked)});
+    $("#country")[0].selectedIndex = 0;
+    });
+    var chart = {
+        plotBackgroundColor: null,
+        plotBorderWidth: true,
+        plotShadow: false
+    };
+    var title = {
+        {% if request.session.country_name %}
+        text: 'Share of News Articles by Topic for {{ request.session.country_name }},<br> {{request.session.from}} - {{request.session.to}}'
+        {% else %}
+        text: 'Select Date, Country, and Topics to view chart comparing results'   
+        {% endif %}
+    };
+    var tooltip = {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    };
+    var plotOptions = {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            showInLegend: true,
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}%</b>: {point.percentage:.1f} %',
+                style: {
+                color: (Highcharts.theme && Highcharts.theme.contrastTextColor)||
+                'black'
+                }
+            }
+        }
+    };
+    var series = [{
+        type: 'pie',
+        name: 'Article share',
+        data: [
+            {% if request.session.final_results %}
+            {% for key, value in request.session.final_results.items %}
+            ['{{ key }}', {{ value }}],
+            {% endfor %}
+            {% endif %}
+        
+        ]
+    }];
+    var json = {};   
+    json.chart = chart; 
+    json.title = title;     
+    json.tooltip = tooltip;  
+    json.series = series;
+    json.plotOptions = plotOptions;
+    $('#output_display').highcharts(json);  
+</script>
+{% endblock form %}

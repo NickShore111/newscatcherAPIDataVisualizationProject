@@ -1,0 +1,72 @@
+{% extends "newscatcher_api/base.html" %}
+{% block heading %}
+<h1>Python Programming Language</h1>
+<h2>Django - Highcharts - RapidAPI</h2>
+{% endblock heading %}
+{% block technologies %}
+{% load static %}
+<main class="container rounded-3 border border-2 border-dark" id="tech">
+    <section class="tech-box">
+        <div class="django">
+            <h4>Django v1.8 Web Framework</h4><hr>
+            <ul>
+                <li>DTL (Django Template Language)</li>
+                <li>SQLite3 Database</li>
+                <li>Bootstrap v5.0</li>
+                <li>JQueryUI</li>
+            </ul>
+        </div><br><br>
+        <div class="highcharts">
+            <h4>Highcharts</h4><hr>
+            <ul>
+                <li>Javascript</li>
+                <li>Dynamic Data Visualization</li>
+                <li><a href="https://www.highcharts.com/products/highcharts/">Highcharts Documentation</a></li>
+            </ul>
+        </div><br><br>
+        <div class="rapidAPI">
+            <h4>RapidAPI</h4><hr>
+            <ul>
+                <li>Python Requests</li>
+                <li>Newscatcher /v1/aggregation Endpoint</li>
+                <li><a href="https://www.notion.so/News-API-46632a5cd61548919ff0132b15b0f0fa">Newscatcher Documentation</a></li>
+                <li style="color: red;"><span style="font-weight: bold;">NOTE:</span> Newscatcher free subscription limits requests to a maximum of 21/hr</li>
+            </ul>
+        </div>
+    </section>
+    <div id="codeImgCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for each in img_gallery %}
+            <button type="button" data-bs-target="#codeImgCarousel" data-bs-slide-to="{{ each.id }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ each.id }}"></button>
+            {% endfor %}
+        </div>
+        <div class="carousel-inner">
+        {% for each in img_gallery %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{% get_static_prefix %}img/{{ each.img }}.png" class="d-block w-100" alt="{{ each.desc }}">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>{{ each.title }}</h5>
+                    <p>{{ each.desc }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#codeImgCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#codeImgCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</main>
+<script>
+$(document).ready(function() {
+    var myCarousel = document.querySelector('#myCarousel')
+    var carousel = new bootstrap.Carousel(myCarousel, {
+    interval: 4000,
+})
+});
+</script>
+{% endblock technologies %}
