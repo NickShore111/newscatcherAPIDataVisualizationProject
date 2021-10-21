@@ -1,7 +1,6 @@
 from django.db import models
 from datetime import datetime, timedelta
 import requests
-from django.contrib import messages
 # Newscatcher API parameters
 url = "https://newscatcher.p.rapidapi.com/v1/aggregation"
 headers = {'x-rapidapi-host': "newscatcher.p.rapidapi.com",
@@ -34,13 +33,10 @@ class InquiryManager(models.Manager):
 
 class ResultManager(models.Manager):
     def process_topics(self, postData, query, inquiry_id):
-        print("PROCESS TOPICS with: ")
-        print(postData)
         postData = dict(postData)
         if len(postData['keyword']) > 3:
             keyword = str(postData['keyword'][0])
             postData['topic'].append(keyword.capitalize())
-            print("Keyword added to topics list: ", postData['topic'])
         topicCountResults = Result.objects.topic_request(
             postData['topic'], query, inquiry_id)
         # topicCountResults => [{doc_count}, errors]
@@ -48,31 +44,24 @@ class ResultManager(models.Manager):
         return final_results
 
     def topic_request(self, postData, query, inquiry_id):
-        print("TOPIC_REQUEST PROCESSING")
         docs_count = dict()
         status = dict()
         for topic in postData:
             query["q"] = topic
-            # print("Search query: ", query)
             response = requests.request(
                 "GET", url, headers=headers, params=query)
-            # print("Response from each topic query: ", response.text)
             data = response.json()
-            print("")
-            print("data: ", data)
-            print("status check: ", response.json()['status'])
+            # print(data['status'])
             if data['status'] == "ok":
                 total_count = 0
                 for day in data['aggregation']:
                     total_count += int(day['doc_count'])
                 docs_count[topic] = total_count
                 status[topic] = data['status']
-                # Saving results to DB if results are returned
+                # Saving results to DB if results return valid
                 Result.objects.create(
                     topic=query["q"], doc_count=docs_count[query["q"]], inquiry=Inquiry.objects.get(id=inquiry_id))
             else:
-                print("Response status was NOT OK!")
-                print("API Response Status: ", data['status'])
                 docs_count[topic] = 0
                 status[topic] = data['status']
         results = [docs_count, status]
@@ -81,8 +70,6 @@ class ResultManager(models.Manager):
     def calc_percentage(self, results):
         percent_data = {}
         total = 0
-        # print("-"*10, "Calc_percentage running", "-"*10)
-        # print("Running calc_percentage with results: ", results[0])
         doc_counts = dict(results[0])
         for count in doc_counts.values():
             total += count
@@ -95,7 +82,6 @@ class ResultManager(models.Manager):
                 results[1]['DivisionError'] = "Not enough results for output"
             else:
                 percent_data[key] = round(percent, 1)
-        # print("Percent_data: ", percent_data)
         status_errors = results[1]
         final_results = [percent_data, status_errors, doc_counts]
         return final_results

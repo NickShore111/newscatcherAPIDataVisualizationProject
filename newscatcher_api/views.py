@@ -1,8 +1,9 @@
-from django.shortcuts import render, HttpResponse, redirect
-# from django.http import HttpResponse
+from django.shortcuts import render, HttpResponse, redirect, reverse
 from datetime import datetime
 from django.contrib import messages
 from newscatcher_api.models import *
+from django.views.generic.base import TemplateView
+
 
 # Global variables
 topics_list = [
@@ -30,11 +31,13 @@ countries = [
     {"name": "Italy", "id": "IT", "lang": "", "lang": "it"},
 ]
 
+class HomeView(TemplateView):
+    template_name = "newscatcher_api/form.html"
 
-def index(request):
-    request.session.flush()
-    list_options = {"topics_list": topics_list, "countries": countries}
-    return render(request, 'newscatcher_api/form.html', {"list_options": list_options})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['list_options'] = {"topics_list": topics_list, "countries": countries}
+        return context
 
 
 def results(request):
@@ -68,22 +71,16 @@ def results(request):
     request.session['to'] = query['to']
     print("inquiry_id: ", inquiry_id)
     # Process queries
-    print("PROCESSING TOPIC QUERIES TO NEWSCATCHER API")
     final_results = Result.objects.process_topics(
         request.POST, query, inquiry_id)
     # final_results => [percent_data, combined_errors, doc_counts]
-    print("*"*10, "Return from result.objects.process_topics", "*"*10)
-    print("Percent_results: ", final_results[0])
-    print("Error_results: ", final_results[1])
     request.session['final_results'] = final_results[0]
     request.session['status_errors'] = final_results[1]
     request.session['doc_counts'] = final_results[2]
-    return redirect('/newscatcher/display')
-
-
-def display(request):
     list_options = {"topics_list": topics_list, "countries": countries}
-    return render(request, 'newscatcher_api/form.html', {"list_options": list_options})
+
+    return redirect(reverse("home"))
+    
 
 
 def technologies(request):

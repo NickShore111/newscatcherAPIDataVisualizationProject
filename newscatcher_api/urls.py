@@ -1,11 +1,11 @@
 from django.urls import path
 from . import views
+from newscatcher_api.views import HomeView
 
 urlpatterns = [ 
-    path('', views.index, name='newscatcher-index'),
-    path('results/', views.results, name='newscatcher-results'),
-    path('display/', views.display, name='newscatcher-display'),
-    path('technologies/', views.technologies, name='newscatcher-technologies'),
-    path('methods/', views.methods, name='newscatcher-methods'),
+    path('', HomeView.as_view(), name='home'),
+    path('results/', views.results, name='results'),
+    path('technologies/', views.technologies, name='technologies'),
+    path('methods/', views.methods, name='methods'),
 
 ]
