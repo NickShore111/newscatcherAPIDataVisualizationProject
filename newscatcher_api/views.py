@@ -39,7 +39,10 @@ class HomeView(TemplateView):
         context['list_options'] = {"topics_list": topics_list, "countries": countries}
         return context
 
-
+def refresh(request):
+    request.session.flush()
+    return redirect(reverse("home"))
+    
 def results(request):
     request.session.flush()
     query = dict()
