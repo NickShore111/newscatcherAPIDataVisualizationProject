@@ -1,5 +1,5 @@
 # API Data Visualization Demo
-- Click [here](http://13.229.123.107/newscatcher/) to view my live demo.
+- Click [here](http://13.229.123.107/newscatcher/) to visit my live demo.
 
 With so much news being repetative and monotonous, I wanted to create a way to easily visualize and compare topics being reported on in different countries. 
 
@@ -8,5 +8,6 @@ endpoint to pull totals based on Topic from different countries around the world
 
 ![Landing page for site](/newscatcher_api/static/img/Landing%20page.png)
 
-After user inputs dates, selects country and topics we output results using Highcharts interactive javascript piechart:
+After user selects date range, country and topics we output results using [Highcharts](https://www.highcharts.com/demo/pie-drilldown) interactive javascript piechart:
+
 ![Results from search](/newscatcher_api/static/img/Output%20example.png)
