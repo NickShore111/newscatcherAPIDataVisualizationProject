@@ -6,3 +6,7 @@ With so much news being repetative and monotonous, I wanted to create a way to e
 I utilize [RapidAPI's Newscatcher](https://rapidapi.com/newscatcher-api-newscatcher-api-default/api/newscatcher/) /v1/aggregation 
 endpoint to pull totals based on Topic from different countries around the world.
 
+![Landing page for site](/newscatcher_api/static/img/Landing%20page.png)
+
+After user inputs dates, selects country and topics we output results using Highcharts interactive javascript piechart:
+![Results from search](/newscatcher_api/static/img/Output%20example.png)
