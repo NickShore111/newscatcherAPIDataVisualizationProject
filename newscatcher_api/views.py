@@ -65,6 +65,7 @@ def results(request):
     inquiry_object = Inquiry.objects.create(
         country_id=request.POST['country_id'], country=inquiry_input['country_name'], ref_date_start=query["from"], ref_date_end=query["to"])
     inquiry_id = int(inquiry_object.id)
+    
     request.session['inquiry_id'] = inquiry_id
     request.session['country_name'] = inquiry_input['country_name']
     request.session['from'] = query['from']
@@ -77,7 +78,6 @@ def results(request):
     request.session['final_results'] = final_results[0]
     request.session['status_errors'] = final_results[1]
     request.session['doc_counts'] = final_results[2]
-    list_options = {"topics_list": topics_list, "countries": countries}
 
     return redirect(reverse("home"))
     

@@ -3,6 +3,7 @@
 <h1>Welcome to World Voice!</h1>
 <h2>See what the world is talking about.</h2>
 {% endblock heading %}
+
 {% block content %}
 <div class="input-form rounded-3 border border-2 border-dark">
     <form action="results/" method="POST">
@@ -68,9 +69,8 @@
 </div>
 {% endif %}
 <div class="rounded-3 border border-2 border-dark" id="output_display"></div>
-
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
     var dateFormat = "yy-mm-dd",
         from = $( "#from" ).datepicker({
             defaultDate: "-5d",
@@ -111,7 +111,7 @@ $(document).ready(function() {
             .prop("checked", this.checked)
             .toggleClass("selected", this.checked)});
     $("#country")[0].selectedIndex = 0;
-    });
+});
     var chart = {
         plotBackgroundColor: null,
         plotBorderWidth: true,
@@ -161,5 +161,6 @@ $(document).ready(function() {
     json.series = series;
     json.plotOptions = plotOptions;
     $('#output_display').highcharts(json);  
+
 </script>
 {% endblock content %}
