@@ -8,6 +8,6 @@ endpoint to pull totals based on Topic from different countries around the world
 
 ![Landing page for site](/newscatcher_api/static/img/Landing%20page.png)
 
-After user selects date range, country and topics we output results using [Highcharts](https://www.highcharts.com/demo/pie-drilldown) interactive javascript piechart:
+After the user selects date range, country and topics, we output the results, along with a [Highcharts](https://www.highcharts.com/demo/pie-drilldown) interactive javascript piechart:
 
 ![Results from search](/newscatcher_api/static/img/Output%20example.png)
