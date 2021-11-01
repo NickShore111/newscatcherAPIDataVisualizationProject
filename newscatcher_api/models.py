@@ -4,7 +4,7 @@ import requests
 # Newscatcher API parameters
 url = "https://newscatcher.p.rapidapi.com/v1/aggregation"
 headers = {'x-rapidapi-host': "newscatcher.p.rapidapi.com",
-           'x-rapidapi-key': "86d80c43d4msh8b45d3c483a4ba4p1e1bdejsna4edf1a13baf"}
+           'x-rapidapi-key': "NotForPublicViewing"}
 
 
 class InquiryManager(models.Manager):
