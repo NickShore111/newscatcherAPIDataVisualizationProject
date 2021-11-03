@@ -1,0 +1,53 @@
+{% extends "newscatcher/base.html" %}
+{% block heading %}
+<h1>Welcome to World Voice!</h1>
+<h2>See what the world is talking about.</h2>
+{% endblock heading %}
+{% load static %}
+{% block styling %}
+<script src="{% static 'js/form.js' %}" type="text/javascript"></script>
+{% endblock %}
+{% block content %}
+<div class="input-form rounded-3 border border-2 border-dark">
+    <form action="{% url 'newscatcher:home' %}" method="POST">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.extra_tags == "date" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+            {% endfor %}
+        {% endif %}
+        <h6 aria-label="date">Select Dates: (Range 0-5 days)</h6>
+        {% csrf_token %}
+        <label for="from">From</label>
+        <input type="text" id="from" name="from" style="margin-bottom: 10px;"><br>
+        <label for="to" style="margin-right: 18px;">To</label>
+        <input type="text" id="to" name="to">
+        <h6>Choose a Country</h6>
+        <select class="form-select form-select-sm border-dark" aria-label="inputRegion" name="country_id" id="country">
+            {% for country in countries %}
+                <option value="{{ country.id }}" selected>{{ country.name }}</option>
+            {% endfor %}
+        </select>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.extra_tags == "topics" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+            {% endfor %}
+        {% endif %}
+            <h6>Select Topics</h6> 
+        {% for topic in topics_list %}
+        <div class="form-check">
+            <input class="form-check-input topics" type="checkbox" name="topic" value="{{ topic }}" id="{{ topic }}">
+            <label class="form-check-label" for="{{ topic }}">{{ topic }}</label>
+        </div>
+        {% endfor %}
+            <input class="form-check-input" type="checkbox" name="all_topics" id="all_topics">&nbsp;
+            <label class="form-check-label" for="all_topics">Select All</label><br>
+        <h6>Keyword: (optional)</h6>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.extra_tags == "keyword" %} <h7 class="errors">{{ message }}</h7> {% endif %}
+            {% endfor %}
+        {% endif %}
+        <input type="text" class="form-control-sm" name="keyword">
+        <button type="submit" class="btn btn-primary m-2 border-dark" style="float:right;">Display</button>
+    </form>
+{% endblock content %}

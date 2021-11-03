@@ -1,38 +1,36 @@
-{% extends "newscatcher_api/base.html" %}
+{% extends "newscatcher/base.html" %}
 {% block heading %}
-<h1>Methods Used</h1>
-<h2>Build Query -> Check Response -> Calculate Results -> Display Output</h2>
+<h1>Python Programming Language</h1>
+<h2>Django - Highcharts - RapidAPI</h2>
 {% endblock heading %}
 {% block content %}
 {% load static %}
-<main class="container rounded-3 border border-2 border-dark" id="methods">
-    <section class="methods-box">
-        <div class="first">
-            <h4>Queryset Build</h4><hr>
+<main class="container rounded-3 border border-2 border-dark" id="tech">
+    <section class="tech-box">
+        <div class="django">
+            <h4>Django v1.8 Web Framework</h4><hr>
             <ul>
-                <li>query['q'] = topic</li>
-                <li>query['from'] = request.POST['from']</li>
-                <li>query['to'] = request.POST['to']</li>
-                <li>query['media'] = false</li>
-                <li>query['agg_by'] = day</li>
-                <li>query['country'] = request.POST['country_id']</li>
-                <li>query['lang'] = matching dictionary data</li>
+                <li>DTL (Django Template Language)</li>
+                <li>SQLite3 Database</li>
+                <li>Bootstrap v5.0</li>
+                <li>JQueryUI</li>
             </ul>
-        </div>
-        <div class="second">
-            <h4>Check Status Response</h4><hr>
+        </div><br><br>
+        <div class="highcharts">
+            <h4>Highcharts</h4><hr>
             <ul>
-                <li>If status = 'ok' results are totalled and saved to database</li>
-                <li>Anything other is defaulted to equal 0</li>
-                <li>Response status is stored for output</li>
+                <li>Javascript</li>
+                <li>Dynamic Data Visualization</li>
+                <li><a href="https://www.highcharts.com/products/highcharts/">Highcharts Documentation</a></li>
             </ul>
-        </div>
-        <div class="third">
-            <h4>Calculate and Display</h4><hr>
+        </div><br><br>
+        <div class="rapidAPI">
+            <h4>RapidAPI</h4><hr>
             <ul>
-                <li>Try calculating percentage</li>
-                <li>Store results in Session</li>
-                <li>If results pass tests display outputs</a></li>
+                <li>Python Requests</li>
+                <li>Newscatcher /v1/aggregation Endpoint</li>
+                <li><a href="https://www.notion.so/News-API-46632a5cd61548919ff0132b15b0f0fa">Newscatcher Documentation</a></li>
+                <li style="color: red;"><span style="font-weight: bold;">NOTE:</span> Newscatcher free subscription limits requests to a maximum of 21/hr</li>
             </ul>
         </div>
     </section>
@@ -65,11 +63,10 @@
 </main>
 <script>
 $(document).ready(function() {
-    var myCarousel = document.querySelector('#codeImgCarousel')
+    var myCarousel = document.querySelector('#myCarousel')
     var carousel = new bootstrap.Carousel(myCarousel, {
     interval: 4000,
 })
 });
-
 </script>
 {% endblock content %}

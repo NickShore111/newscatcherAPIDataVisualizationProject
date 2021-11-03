@@ -1,12 +1,11 @@
-from django.shortcuts import render, HttpResponse, redirect, reverse
+from django.shortcuts import render, redirect
 from datetime import datetime
 from django.contrib import messages
 from newscatcher_api.models import *
-from django.views.generic.base import TemplateView
 
 
 # Global variables
-topics_list = [
+TOPICS = [
     "Pollution",
     "Climate Change",
     "Education",
@@ -16,7 +15,7 @@ topics_list = [
     "Substance Abuse",
     "Food Insecurity",
 ]
-countries = [
+COUNTRIES = [
     {"name": "China", "id": "CN", "lang": "en"},
     {"name": "India", "id": "IN", "lang": "hi"},
     {"name": "United States", "id": "US", "lang": "en"},
@@ -31,59 +30,44 @@ countries = [
     {"name": "Italy", "id": "IT", "lang": "", "lang": "it"},
 ]
 
-class HomeView(TemplateView):
-    template_name = "newscatcher_api/form.html"
+def index(request):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['list_options'] = {"topics_list": topics_list, "countries": countries}
-        return context
-
-def refresh(request):
-    request.session.flush()
-    return redirect(reverse("home"))
-    
-def results(request):
-    request.session.flush()
-    query = dict()
-    inquiry_input = dict()
-    query["agg_by"] = "day"
-    query["country"] = request.POST['country_id']
-    query["media"] = False
-    # Input validation
-    errors = Inquiry.objects.query_validator(request.POST)
-    if len(errors):
-        for key, value in errors.items():
-            messages.error(request, value, extra_tags=key)
-        return redirect("/newscatcher")
-    for country in countries:
-        if country['id'] == request.POST['country_id']:
-            inquiry_input['country_name'] = country['name']
-            query['lang'] = country['lang']
-    query["from"] = datetime.strptime(
-        request.POST['from'], '%Y-%m-%d').strftime('%m/%d/%Y')
-    query["to"] = datetime.strptime(
-        request.POST['to'], '%Y-%m-%d').strftime('%m/%d/%Y')
-    # Log Inquiry and get primary key
-    inquiry_object = Inquiry.objects.create(
-        country_id=request.POST['country_id'], country=inquiry_input['country_name'], ref_date_start=query["from"], ref_date_end=query["to"])
-    inquiry_id = int(inquiry_object.id)
-    
-    request.session['inquiry_id'] = inquiry_id
-    request.session['country_name'] = inquiry_input['country_name']
-    request.session['from'] = query['from']
-    request.session['to'] = query['to']
-    print("inquiry_id: ", inquiry_id)
-    # Process queries
-    final_results = Result.objects.process_topics(
-        request.POST, query, inquiry_id)
-    # final_results => [percent_data, combined_errors, doc_counts]
-    request.session['final_results'] = final_results[0]
-    request.session['status_errors'] = final_results[1]
-    request.session['doc_counts'] = final_results[2]
-
-    return redirect(reverse("home"))
-    
+    if request.method == "GET":
+        return render(request, "newscatcher/form.html", {"topics_list": TOPICS, "countries": COUNTRIES})
+    if request.method == "POST":
+        query = dict()
+        queryResults = dict()
+        query["agg_by"] = "day"
+        query["country"] = request.POST['country_id']
+        query["media"] = False
+        errors = Inquiry.objects.query_validator(request.POST)
+        if len(errors):
+            for key, value in errors.items():
+                messages.error(request, value, extra_tags=key)
+            return redirect("newscatcher:home")
+        for country in COUNTRIES:
+            if country['id'] == request.POST['country_id']:
+                queryCountry = country['name']
+                query['lang'] = country['lang']
+        
+        query['from'] = datetime.strptime(
+            request.POST['from'], '%Y-%m-%d').strftime('%m/%d/%Y')
+        query["to"] = datetime.strptime(
+            request.POST['to'], '%Y-%m-%d').strftime('%m/%d/%Y')
+        """Saving quary parameters to db"""
+        queryObject = Inquiry.objects.create(
+            country_id=request.POST['country_id'], country=queryCountry, ref_date_start=query["from"], ref_date_end=query["to"])
+        query_id = int(queryObject.id)
+        """QueryResults used to build Highcharts title"""
+        queryResults['query_id'] = query_id
+        queryResults['country_name'] = queryCountry
+        queryResults['from'] = query['from']
+        queryResults['to'] = query['to']
+        outputResults = Result.objects.process_topics(request.POST, query, query_id)
+        queryResults['final_results'] = outputResults[0]
+        queryResults['status_errors'] = outputResults[1]
+        queryResults['doc_counts'] = outputResults[2]
+        return render(request, "newscatcher/results.html", { "queryResults": queryResults })
 
 
 def technologies(request):
@@ -101,8 +85,7 @@ def technologies(request):
         {"id": "5", "img": "CodeSnippet0", "title": "Bootstrap v5.0",
             "desc": "Bootstrap image carousel."},
     ]
-    return render(request, 'newscatcher_api/technologies.html', {"img_gallery": img_gallery})
-
+    return render(request, 'newscatcher/technologies.html', {"img_gallery": img_gallery})
 
 def methods(request):
     img_gallery = [
@@ -125,4 +108,4 @@ def methods(request):
         {"id": "8", "img": "ProcessSnippet3", "title": "Calculate Percentage",
             "desc": "Use Try to divide each topic doc_count by total, then mutliply by 100. If results don't yield responses we won't run into ZeroDivisionError."},
     ]
-    return render(request, 'newscatcher_api/methods.html', {"img_gallery": img_gallery})
+    return render(request, 'newscatcher/methods.html', {"img_gallery": img_gallery})

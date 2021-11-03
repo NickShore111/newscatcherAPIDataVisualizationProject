@@ -39,7 +39,6 @@ class ResultManager(models.Manager):
             postData['topic'].append(keyword.capitalize())
         topicCountResults = Result.objects.topic_request(
             postData['topic'], query, inquiry_id)
-        # topicCountResults => [{doc_count}, errors]
         final_results = Result.objects.calc_percentage(topicCountResults)
         return final_results
 
@@ -48,9 +47,11 @@ class ResultManager(models.Manager):
         status = dict()
         for topic in postData:
             query["q"] = topic
+
             response = requests.request(
                 "GET", url, headers=headers, params=query)
             data = response.json()
+
             # print(data['status'])
             if data['status'] == "ok":
                 total_count = 0

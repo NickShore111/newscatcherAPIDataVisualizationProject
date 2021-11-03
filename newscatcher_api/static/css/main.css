@@ -48,6 +48,7 @@ h6 {
 }
 #output_display {
     box-shadow: 5px 10px 10px rgb(29, 48, 49);
+    min-height: 500px;
 }
 .query_results {
     width: 250px; 

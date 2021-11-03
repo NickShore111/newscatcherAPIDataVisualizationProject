@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('newscatcher/', include('newscatcher_api.urls')),
+    path('newscatcher/', include('newscatcher_api.urls', namespace="newscatcher")),
     path('admin/', admin.site.urls),
 ]
