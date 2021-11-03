@@ -29,8 +29,6 @@ class InquiryManager(models.Manager):
         if len(postData['keyword']) > 0 and len(postData['keyword']) < 4 or len(postData['keyword']) > 20:
             errors['keyword'] = "Keyword range is 4-20 characters."
         return errors
-
-
 class ResultManager(models.Manager):
     def process_topics(self, postData, query, inquiry_id):
         postData = dict(postData)
@@ -47,19 +45,16 @@ class ResultManager(models.Manager):
         status = dict()
         for topic in postData:
             query["q"] = topic
-
             response = requests.request(
                 "GET", url, headers=headers, params=query)
             data = response.json()
-
-            # print(data['status'])
             if data['status'] == "ok":
                 total_count = 0
                 for day in data['aggregation']:
                     total_count += int(day['doc_count'])
                 docs_count[topic] = total_count
                 status[topic] = data['status']
-                # Saving results to DB if results return valid
+                """Saving results to DB if results return valid"""
                 Result.objects.create(
                     topic=query["q"], doc_count=docs_count[query["q"]], inquiry=Inquiry.objects.get(id=inquiry_id))
             else:
@@ -88,9 +83,7 @@ class ResultManager(models.Manager):
         return final_results
 
 
-""" Results saved to SQLLite3 Database for posterity """
-
-
+""" Results saved to SQLLite3 Database for posterity and potential future processing"""
 class Inquiry(models.Model):
     country = models.CharField(max_length=20)
     country_id = models.CharField(max_length=2)

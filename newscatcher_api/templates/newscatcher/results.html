@@ -2,7 +2,9 @@
 {% block heading %}
 <h1>Welcome to World Voice!</h1>
 <h2>See what the world is talking about.</h2>
-{% endblock heading %}
+{% endblock %}
+{% block styling %}
+{% endblock %}
 {% block content %}
 <div class="query_results rounded-3 border border-2 border-dark">
     <h5>Response status returned:</h5><hr>
@@ -110,4 +112,4 @@
     $('#output_display').highcharts(json);  
 
 </script>
-{% endblock content %}
+{% endblock %}

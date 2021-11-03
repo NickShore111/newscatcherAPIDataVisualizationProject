@@ -4,7 +4,6 @@ from . import views
 app_name = 'newscatcher'
 urlpatterns = [ 
     path('', views.index, name='home'),
-    # path('results/', views.results, name='results'),
     path('technologies/', views.technologies, name='technologies'),
     path('methods/', views.methods, name='methods'),
 
