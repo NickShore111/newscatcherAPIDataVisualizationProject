@@ -9,6 +9,7 @@ headers = {'x-rapidapi-host': "newscatcher.p.rapidapi.com",
 
 class InquiryManager(models.Manager):
     def query_validator(self, postData):
+    """Validate query inputs from user"""
         errors = {}
         today_date = datetime.today().strftime("%Y-%m-%d")
         today = datetime.strptime(today_date, "%Y-%m-%d")
@@ -31,6 +32,7 @@ class InquiryManager(models.Manager):
         return errors
 class ResultManager(models.Manager):
     def process_topics(self, postData, query, inquiry_id):
+        """Pre-process topics list and adjust for keyword input"""
         postData = dict(postData)
         if len(postData['keyword']) > 3:
             keyword = str(postData['keyword'][0])
@@ -41,6 +43,7 @@ class ResultManager(models.Manager):
         return final_results
 
     def topic_request(self, postData, query, inquiry_id):
+        """Process each topic selected by user and send to endpoint via requests"""
         docs_count = dict()
         status = dict()
         for topic in postData:
@@ -64,6 +67,7 @@ class ResultManager(models.Manager):
         return results
 
     def calc_percentage(self, results):
+        """Find the doc_count percentage for each topic per request"""
         percent_data = {}
         total = 0
         doc_counts = dict(results[0])

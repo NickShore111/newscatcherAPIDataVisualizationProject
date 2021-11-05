@@ -36,7 +36,7 @@ def index(request):
         return render(request, "newscatcher/form.html", {"topics_list": TOPICS, "countries": COUNTRIES})
     if request.method == "POST":
         query = dict()
-        queryResults = dict()
+        query_results = dict()
         query["agg_by"] = "day"
         query["country"] = request.POST['country_id']
         query["media"] = False
@@ -59,15 +59,15 @@ def index(request):
             country_id=request.POST['country_id'], country=queryCountry, ref_date_start=query["from"], ref_date_end=query["to"])
         query_id = int(queryObject.id)
         """QueryResults used to build Highcharts title"""
-        queryResults['query_id'] = query_id
-        queryResults['country_name'] = queryCountry
-        queryResults['from'] = query['from']
-        queryResults['to'] = query['to']
+        query_results['query_id'] = query_id
+        query_results['country_name'] = queryCountry
+        query_results['from'] = query['from']
+        query_results['to'] = query['to']
         outputResults = Result.objects.process_topics(request.POST, query, query_id)
-        queryResults['final_results'] = outputResults[0]
-        queryResults['status_errors'] = outputResults[1]
-        queryResults['doc_counts'] = outputResults[2]
-        return render(request, "newscatcher/results.html", { "queryResults": queryResults })
+        query_results['final_results'] = outputResults[0]
+        query_results['status_errors'] = outputResults[1]
+        query_results['doc_counts'] = outputResults[2]
+        return render(request, "newscatcher/results.html", { "queryResults": query_results })
 
 
 def technologies(request):
