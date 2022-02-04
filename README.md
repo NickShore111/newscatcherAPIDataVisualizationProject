@@ -1,4 +1,4 @@
-# API Data Visualization Demo
+# API Front-End Demo
 
 ## Project Goals:
 - Make use of RapidAPI's Newscatcher /v1/aggregation endpoint to pull data on article counts from around the world
