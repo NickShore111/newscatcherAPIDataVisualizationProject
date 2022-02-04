@@ -3,7 +3,7 @@
 ## Project Goals:
 - Make use of RapidAPI's Newscatcher /v1/aggregation endpoint to pull data on article counts from around the world
 - Utilize Javascript to provide an interactive interface for viewing data, taking advantage of [Highcharts](https://www.highcharts.com/demo/pie-drilldown) template resources
-- Perform data validation on user inputs and endpoint outputs
+- Perform data validation on user request and endpoint response
 - Deploy project to Ubuntu server on AWS
 
 ### Landing Page
